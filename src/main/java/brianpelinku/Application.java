@@ -6,14 +6,18 @@ import brianpelinku.esercizio.Cliente;
 import brianpelinku.esercizio.Ordine;
 import brianpelinku.esercizio.Prodotto;
 import com.github.javafaker.Faker;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Application {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Faker f = new Faker(Locale.ITALY);
 
@@ -69,18 +73,17 @@ public class Application {
                 .stream()
                 .collect(Collectors.groupingBy(Ordine::getCliente));
         listaOrdiniPerCliente.forEach((cliente, ordini) -> {
-            System.out.println("Cliente: \n" + cliente.getNomeCliente() + " " + ordini);
+            System.out.println("\n" + cliente.getNomeCliente() + " " + ordini);
         });
 
         // es 2 crea una mappa: <chiave cliente - valore importo totale degli acquisti>
         System.out.println("---------------- Es 2 ---------------");
         Map<Cliente, Double> importoTotPerCliente = listaOrdini
                 .stream()
-                .collect(Collectors
-                        .groupingBy(Ordine::getCliente, Collectors.summingDouble(ordine -> ordine.getProdotti()
-                                .stream().mapToDouble(Prodotto::getPrezzo).sum())));
+                .collect(Collectors.groupingBy(Ordine::getCliente, Collectors.summingDouble(ordine -> ordine.getProdotti()
+                        .stream().mapToDouble(Prodotto::getPrezzo).sum())));
         importoTotPerCliente.forEach((cliente, totImporto) ->
-                System.out.println("Cliente: " + cliente.getNomeCliente() + "\nImporto Totale: " + totImporto));
+                System.out.println("\n" + cliente.getNomeCliente() + "\nImporto Totale: " + totImporto));
 
         // es 3 elenco dei 3 prodotti più costosi
         System.out.println("---------------- Es 3 ---------------");
@@ -108,5 +111,61 @@ public class Application {
         sommaPrezziPerCategoriaProdotti.forEach((categoria, totPrezzo) ->
                 System.out.println("Categoria: " + categoria + "\nPrezzo totale categoria: " + totPrezzo)
         );
+
+        // es 6
+        System.out.println("---------------- Es 6 ----------------");
+        File fileProdotti = new File("src/prodotti.txt");
+        salvaProdottiSuDisco(prodotti, fileProdotti);
+
+        // es 7
+        System.out.println("---------------- Es 7 ----------------");
+        List<Prodotto> prodottiSuDisco = new ArrayList<>();
+        leggiProdottiSuDisco(fileProdotti, prodottiSuDisco);
+
+        for (Prodotto prodotto : prodottiSuDisco) {
+            System.out.println(prodotto);
+        }
+
     }
+
+    public static void salvaProdottiSuDisco(List<Prodotto> prodotti, File file) {
+
+        StringBuilder stringa = new StringBuilder();
+
+        for (Prodotto prodotto : prodotti) {
+            stringa.append(prodotto.getNome()).append("@").append(prodotto.getCategoria()).append("@").append(prodotto.getPrezzo()).append(System.lineSeparator());
+        }
+
+
+        try {
+            FileUtils.writeStringToFile(file, stringa.toString(), StandardCharsets.UTF_8, true);
+            System.out.println("Prodotti aggiunti nel file prodotti.txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // tentativo... funziona ma non benissimo
+        /*String stringa = "";
+        stringa += prodotti.stream().map(prodotto -> prodotto.getNome() + "@" + prodotto.getCategoria() + "@" + prodotto.getPrezzo()).toList() + System.lineSeparator();
+        try {
+            FileUtils.writeStringToFile(file, stringa, StandardCharsets.UTF_8, true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }*/
+    }
+
+    public static void leggiProdottiSuDisco(File file, List<Prodotto> prodotti) throws IOException {
+
+
+        String contenutoFile = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        String[] arrayContenutoFile = contenutoFile.split(System.lineSeparator());
+
+        for (String stringa : arrayContenutoFile) {
+            String[] stringaProdotto = stringa.split("@");
+            Prodotto prodotto = new Prodotto(stringaProdotto[0], stringaProdotto[1], Double.parseDouble(stringaProdotto[2]));
+            prodotti.add(prodotto);
+        }
+
+
+    }
+
 }

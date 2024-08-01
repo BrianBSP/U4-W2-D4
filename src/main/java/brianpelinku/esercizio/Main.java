@@ -50,7 +50,7 @@ public class Main {
                 .stream()
                 .filter(prodotto -> "Books".equals(prodotto.getCategoria()) && prodotto.getPrezzo() > 100)
                 .toList();
-        System.out.println("-------- Es 1 -------");
+        System.out.println("\n-------- Es 1 -------");
         System.out.println("Prodotti appartenenti alla categoria BOOKS con prezzo superiore a € 100");
         books.forEach(System.out::println);
 
@@ -63,7 +63,7 @@ public class Main {
                         .anyMatch(prodotto -> "Baby"
                                 .equals(prodotto.getCategoria())))
                 .toList();
-        System.out.println("----- Es2 -----");
+        System.out.println("\n----- Es2 -----");
         System.out.println("liste ordini con prodotti appartenenti alla categoria baby");
         listaOrdiniBaby.forEach(System.out::println);
 
@@ -77,7 +77,7 @@ public class Main {
                         .setPrezzo(prodotto
                                 .getPrezzo() * 0.9))
                 .toList();
-        System.out.println("------ Es3 -------");
+        System.out.println("\n------ Es3 -------");
         System.out.println("lista prodotti categoria BOYS con sconto 10%");
         prodottiBoys.forEach(System.out::println);
 
@@ -90,7 +90,7 @@ public class Main {
                 .filter(ordine -> !ordine.getDataOrdine().isBefore(inizio) && !ordine.getDataOrdine().isAfter(fine))
                 .flatMap(ordine -> ordine.getProdotti().stream())
                 .toList();
-        System.out.println("------ Es 4 ------");
+        System.out.println("\n------ Es 4 ------");
         System.out.println("lista prodotti ordinati da clienti LIVELLO2 nel periodo tra 1-6-2024 al 31-7-2024");
         prodottiTier2.forEach(System.out::println);
 
